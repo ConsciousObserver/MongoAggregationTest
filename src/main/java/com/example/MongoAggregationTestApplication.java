@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
 import org.bson.BsonDocument;
@@ -111,8 +112,11 @@ class ProductController {
 	@GetMapping("/products")
 	public List<Product> getProducts(@RequestParam String productName, @RequestParam String brandName,
 	        @RequestParam String categoryName, @RequestParam String subCategoryName,
-	        @RequestParam @Min(0) int pageNumber, @RequestParam @Min(1) int pageSize) {
+	        @RequestParam @Min(0) int pageNumber, @RequestParam @Min(1) @Max(100) int pageSize) {
 
+		log.info(
+		        "Request parameters: productName: {}, brandName: {}, categoryName: {}, subCategoryName: {}, pageNumber: {}, pageSize: {}",
+		        productName, brandName, categoryName, subCategoryName, pageNumber, pageSize);
 		//Query Start
 
 		TextCriteria productNameTextCriteria = new TextCriteria().matchingAny(productName).caseSensitive(false);

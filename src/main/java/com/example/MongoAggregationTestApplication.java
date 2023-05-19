@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
@@ -152,7 +153,9 @@ class ProductController {
         SkipOperation skip = Aggregation.skip((long) pageNumber * pageSize);
         LimitOperation limit = Aggregation.limit(pageSize);
 
-        Aggregation aggregation = Aggregation.newAggregation(productNameTextMatch, orMatch, skip, limit);
+        Aggregation aggregation = Aggregation.newAggregation(productNameTextMatch, orMatch, skip, limit)
+                //AllowDiskUse is needed in case query runs out of fixed memory configured in Mongo
+                .withOptions(AggregationOptions.builder().allowDiskUse(true).build());
 
         //Query end
 

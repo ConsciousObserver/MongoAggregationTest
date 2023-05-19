@@ -189,13 +189,13 @@ class ProductController {
                 Product.COLLECTION_NAME,
                 org.bson.Document.class);
 
-        List<org.bson.Document> products = new ArrayList<>();
+        List<org.bson.Document> results = new ArrayList<>();
 
-        aggregateResults.iterator().forEachRemaining(products::add);
+        aggregateResults.iterator().forEachRemaining(results::add);
 
-        log.info("Found products: {}", products);
+        log.info("Found products: {}", results);
 
-        return products;
+        return results;
     }
 }
 

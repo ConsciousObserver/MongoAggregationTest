@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOptions;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.LimitOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.SkipOperation;
@@ -171,6 +172,31 @@ class ProductController {
 
         return products;
     }
+
+    @GetMapping("/group-by-status")
+    public List<org.bson.Document> getProducts() {
+
+        //Query Start
+        GroupOperation groupByStatus = Aggregation.group("status").count().as("statusCount");
+
+        Aggregation aggregation = Aggregation.newAggregation(groupByStatus)
+                //AllowDiskUse is needed in case query runs out of fixed memory configured in Mongo
+                .withOptions(AggregationOptions.builder().allowDiskUse(true).build());
+        //Query end
+
+        //Query execution
+        AggregationResults<org.bson.Document> aggregateResults = mongoTemplate.aggregate(aggregation,
+                Product.COLLECTION_NAME,
+                org.bson.Document.class);
+
+        List<org.bson.Document> products = new ArrayList<>();
+
+        aggregateResults.iterator().forEachRemaining(products::add);
+
+        log.info("Found products: {}", products);
+
+        return products;
+    }
 }
 
 @Data
@@ -251,3 +277,4 @@ class ErrorResponse {
 
     private int statusCode;
 }
+
